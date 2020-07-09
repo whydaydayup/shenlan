@@ -1,0 +1,7 @@
+#include_directories(/usr/include/hello)
+find_path(myHeader hello.h)
+if(myHeader)
+include_directories(${myHeader})
+endif(myHeader)
+add_executable(main main.c)
+target_link_libraries(main libhello.a)

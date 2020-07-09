@@ -1,0 +1,8 @@
+cmake_minimum_required(VERSION 2.8)
+project(HELLO)
+add_subdirectory(src bin)
+message(STATUS "This is BINARY dir" ${PROJECT_BINARY_DIR})
+message(STATUS "This is SOURCE dir" ${PROJECT_SOURCE_DIR})
+install(FILES COPYRIGHT README DESTINATION share/doc/cmake/t2)
+install(PROGRAMS runhello.sh DESTINATION bin)
+install(DIRECTORY doc/ DESTINATION share/doc/cmake/t2)

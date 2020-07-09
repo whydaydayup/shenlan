@@ -1,0 +1,115 @@
+Brute_Hamming
+cost time: 2.39254 ms
+cost time: 2.87023 ms
+cost time: 1.94523 ms
+cost time: 2.43949 ms
+cost time: 2.50406 ms
+-- Max dist : 95.000000 
+-- Min dist : 7.000000 
+matches: 500
+good matches: 81
+
+Brute_交叉认证
+cost time: 3.02346 ms
+cost time: 2.58912 ms
+cost time: 1.74241 ms
+cost time: 2.7189 ms
+cost time: 1.78936 ms
+cost time: 2.39924 ms
+matches: 286
+
+
+Brute_kNN
+cost time: 2.53547 ms
+cost time: 1.76064 ms
+cost time: 2.63376 ms
+cost time: 2.6413 ms
+cost time: 2.42547 ms
+matches: 74
+
+
+Flann_Hamming
+cost time: 7.50283 ms
+cost time: 6.16904 ms
+cost time: 5.94411 ms
+cost time: 5.63359 ms
+cost time: 5.51575 ms
+-- Max dist : 467.853607 
+-- Min dist : 97.979591 
+matches: 500
+good matches: 30
+
+
+
+
+Flann_KNN
+cost time: 6.33876 ms
+cost time: 6.01269 ms
+cost time: 7.32737 ms
+cost time: 6.66845 ms
+cost time: 6.60324 ms
+cost time: 7.03709 ms
+matches: 26
+
+
+cost time: 17.3581 ms
+15.6337 ms cost time: 14.65 ms cost time: 13.3348 ms cost time: 13.0719 ms cost time: 12.7731 ms
+matches: 168
+matches: 159
+
+
+
+
+******************************************
+
+flann
+LSH ???   KDTree
+
+FLANN_Hamming
+cost time: 30.9229 ms 30.4316 ms 29.4766 ms 30.4953 ms 33.9291 ms 32.4745 ms 33.1373 ms
+matches: 1000
+good matches: 384
+RANSAC matches: 374
+97.3958%
+
+1000  LshIndexParams(5, 10, 1)
+extract keypoints cost time: 9.809
+cost time: 9.90272 ms
+matches: 1000
+good matches: 383
+RANSAC matches: 348
+90.8616%
+
+FLANN_KNN
+cost time: 31.2675 ms  30.3472 ms 31.6086 ms 35.0094 ms 30.3717 ms 29.0422 ms
+matches: 1000
+good matches: 420
+RANSAC matches: 339
+80.7142%
+
+BruteForce_cross Check
+cost time: 11.5108 ms 6.64976 ms 6.70881 ms 7.63782 ms 9.0112 ms 7.15569 ms
+good matches: 698
+RANSAC matches: 573
+82.0916%
+
+BruteForce_Hamming
+cost time: 10.1194 ms 8.03588 ms 7.27686 ms 13.3414 ms 6.91646 ms 11.5143 ms 6.86143 ms 7.57529 ms 6.72518 ms
+matches: 1000
+good matches: 384
+RANSAC matches: 374
+97.03958%
+
+10000
+cost time: 519.572 ms
+matches: 8974
+good matches: 3288
+RANSAC matches: 3106
+
+
+BruteForce_KNN
+cost time: 6.75105 ms 14.0597 ms 9.17235 ms 9.7108 ms 9.54063 ms 9.37867 ms 7.78463 ms 6.90291 ms
+good matches: 417 
+RANSAC matches: 347
+83.2134%
+

@@ -1,0 +1,70 @@
+opencv-3.1.0.zip
+sudo apt-get install build-essential libgtk2.0-dev libvtk5-dev libjpeg-dev libtiff4-dev libjasper-dev libopenexr-dev libtbb-dev
+make -j4
+sudo make install
+默认存储到你的/usr/local
+之前已经安装OpenCV 2,建议把OpenCV 3安装到不同的地方
+
+
+下载的是最新的opencv4，和openCV3不兼容，很多不一样，出现错误
+cd ~/<my_working_directory>  //比如工作目录为opencv即，cd ~/opencv
+git clone https://github.com/Itseez/opencv.git可以在官网下载老的版本
+git clone https://github.com/Itseez/opencv_contrib.git
+
+
+cd ~/opencv
+mkdir build  //建立一个build目录，把cmake的文件都放着里边
+cd build　　　//进入build目录
+
+cmake -D OPENCV_ENABLE_NONFREE:BOOL=ON -D CMAKE_BUILD_TYPE=Release -D OPENCV_EXTRA_MODULES_PATH=~/opencv/opencv_contrib/modules/ -D CMAKE_INSTALL_PREFIX=/usr/local ../opencv
+注：命令中最后的"  .. "（空格+两个点）千万不要忘记
+其中 CMAKE_BUILD_TYPE=Release / Debug
+OPENCV_EXTRA_MODULES_PATH 就是用来指定要编译的扩展模块，后边加上刚下载的opencv_contrib模块的路径即可。
+OPENCV_ENABLE_NONFREE:BOOL=ON允许使用带有专利的模块
+这里官方文档上还给出了其他一些参数，但是我没用过，这里就不再描述了。有需要的可以查看http://docs.opencv.org/trunk/d7/d9f/tutorial_linux_install.html
+
+make -j4
+sudo make install
+
+
+
+
+
+Eigen3
+sudo apt-get install libeigen3-dev
+sudo updatedb
+locate eigen3查找Eigen的文件位置，一般在/usr/include/eigen3中
+
+g2o
+sudo apt-get install libeigen3-dev libsuitesparse-dev libqt4-dev qt4-qmake libqglviewer-qt4-dev
+1404或1604的最后一项改为 libqglviewer-dev 即可。
+mkdir build
+cd build
+cmake ..
+make
+sudo make install
+
+
+ceres
+
+
+非模板类的 Sophus
+git clone https://github.com/strasdat/Sophus.git
+cd Sophus
+git checkout a621ff
+Sophus本身是一个cmake工程。Sophus库只须编译即可,无须安装。
+mkdir build
+cd build
+cmake ..
+make一定要编译！！！
+
+
+
+
+
+
+extract keypoints cost time: 0.889
+extract keypoints cost time: 0.956
+extract keypoints cost time: 1.194
+extract keypoints cost time: 1.331
+extract keypoints cost time: 1.514

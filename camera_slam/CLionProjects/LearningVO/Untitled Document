@@ -1,0 +1,123 @@
+int main( int argc, char** argv )
+{ 
+  Mat img_1, img_2;
+  Mat R_f, t_f;
+  //生成输出的文件
+  ofstream myfile;
+  myfile.open ("results1_1.txt");
+  //后面会采用帧数数据计算两帧之间距离作为scale
+  double scale = 1.00;
+  //先创建数组，sprintf()将照片输出到指定指针,前两张图像
+  char filename1[200];
+  char filename2[200];
+  sprintf(filename1, "/home/avisingh/Datasets/KITTI_VO/00/image_2/%06d.png", 0);
+  sprintf(filename2, "/home/avisingh/Datasets/KITTI_VO/00/image_2/%06d.png", 1);
+  //读数据集前两帧
+  Mat img_1_c = imread(filename1);
+  Mat img_2_c = imread(filename2);
+ 
+  if ( !img_1_c.data || !img_2_c.data ) { 
+    std::cout<< " --(!) Error reading images " << std::endl; return -1;
+  }
+  // 转为灰度图像
+  cvtColor(img_1_c, img_1, COLOR_BGR2GRAY);
+  cvtColor(img_2_c, img_2, COLOR_BGR2GRAY);
+  // 特征检测，追踪
+  vector<Point2f> points1, points2;        //vectors to store the coordinates of the feature points
+  featureDetection(img_1, points1);        //detect features in img_1
+  vector<uchar> status;
+  featureTracking(img_1,img_2,points1,points2, status); //track those features to img_2
+  //相机参数
+  double focal = 718.8560;
+  cv::Point2d pp(607.1928, 185.2157);
+  //找E，恢复第二帧位姿T[R|t]
+  Mat E, R, t, mask;
+  E = findEssentialMat(points2, points1, focal, pp, RANSAC, 0.999, 1.0, mask);
+  recoverPose(E, points2, points1, R, t, focal, pp, mask);
+  R_f = R.clone();
+  t_f = t.clone();
+  // 创建窗体用于显示读取的图片以及显示轨迹
+  char text[100];
+  int fontFace = FONT_HERSHEY_PLAIN;
+  double fontScale = 1;
+  int thickness = 1;
+  cv::Point textOrg(10, 50);
+  namedWindow( "Road facing camera", WINDOW_AUTOSIZE );// 创建窗口
+  namedWindow( "Trajectory", WINDOW_AUTOSIZE );
+  Mat traj = Mat::zeros(600, 600, CV_8UC3);//创建黑背景
+  //以第二帧作为循环的第一帧图像
+  Mat prevImage = img_2;
+  Mat currImage;
+  vector<Point2f> prevFeatures = points2;
+  vector<Point2f> currFeatures;
+  char filename[100];
+  for(int numFrame=2; numFrame < MAX_FRAME; numFrame++)	{
+  	sprintf(filename, "/home/avisingh/Datasets/KITTI_VO/00/image_2/%06d.png", numFrame);
+    //cout << numFrame << endl;
+  	Mat currImage_c = imread(filename);
+  	cvtColor(currImage_c, currImage, COLOR_BGR2GRAY);
+  	vector<uchar> status;
+  	featureTracking(prevImage, currImage, prevFeatures, currFeatures, status);
+  	E = findEssentialMat(currFeatures, prevFeatures, focal, pp, RANSAC, 0.999, 1.0, mask);
+  	recoverPose(E, currFeatures, prevFeatures, R, t, focal, pp, mask);
+	//特征点化为二维像素坐标(xy)，有什么用吗？？？可以直接删掉
+    Mat prevPts(2,prevFeatures.size(), CV_64F), currPts(2,currFeatures.size(), CV_64F);
+    for(int i=0;i<prevFeatures.size();i++)	{   
+  		prevPts.at<double>(0,i) = prevFeatures.at(i).x;
+  		prevPts.at<double>(1,i) = prevFeatures.at(i).y;
+ 
+  		currPts.at<double>(0,i) = currFeatures.at(i).x;
+  		currPts.at<double>(1,i) = currFeatures.at(i).y;
+    }
+	//获得绝对尺度，最后一个参数是z
+  	scale = getAbsoluteScale(numFrame, 0, t.at<double>(2));
+	//z坐标大于x y且尺度大于0.1？？？
+    if ((scale>0.1)&&(t.at<double>(2) > t.at<double>(0)) && (t.at<double>(2) > t.at<double>(1))) {
+      t_f = t_f + scale*(R_f*t);
+      R_f = R*R_f; 
+    }
+    else {
+     cout << "scale below 0.1, or incorrect translation" << endl;
+    }
+    
+   //输出轨迹数据，形式如00.txt
+   myfile << t_f.at<double>(0) << " " << t_f.at<double>(1) << " " << t_f.at<double>(2) << endl;
+ 
+  // 如果被跟踪的特征数量低于特定阈值，则触发重新检测
+ 	  if (prevFeatures.size() < MIN_NUM_FEAT)	{
+      cout << "Number of tracked features reduced to " << prevFeatures.size() << endl;
+      cout << "trigerring redection" << endl;
+ 	  featureDetection(prevImage, prevFeatures);
+      featureTracking(prevImage,currImage,prevFeatures,currFeatures, status);
+ 	  }
+    prevImage = currImage.clone();
+    prevFeatures = currFeatures;
+	//绘制轨迹，为什么y的是第三个z，汽车相机朝向正前方
+	//Mat.at<>()访问元素
+    int x = int(t_f.at<double>(0)) + 300;
+    int y = int(t_f.at<double>(2)) + 100;
+	//画圆(图像，圆心坐标，半径,红色，线条粗细)
+    circle(traj, Point(x, y) ,1, CV_RGB(255,0,0), 2);
+	//矩形（图像，对角的顶点，黑色，填充），放文字前先用矩形覆盖住。
+    rectangle( traj, Point(10, 30), Point(550, 50), CV_RGB(0,0,0), CV_FILLED);
+	//坐标实时变化
+    sprintf(text, "Coordinates: x = %02fm y = %02fm z = %02fm", t_f.at<double>(0), t_f.at<double>(1), t_f.at<double>(2));
+	//放文字（图像你，文字内容，位置，字体类型，颜色白，厚度）
+    putText(traj, text, textOrg, fontFace, fontScale, Scalar::all(255), thickness, 8);
+ 
+    imshow( "Road facing camera", currImage_c );
+    imshow( "Trajectory", traj );
+ 
+    waitKey(1);
+ 
+  }
+  //计时结束，转化为以秒为单位
+  clock_t end = clock();
+  double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
+  cout << "Total time taken: " << elapsed_secs << "s" << endl;
+ 
+  //cout << R_f << endl;
+  //cout << t_f << endl;
+ 
+  return 0;
+}

@@ -1,0 +1,25 @@
+set(LIBHELLO_SRC hello.cpp)
+#默认是生成静态库，不需要写全libhello.so，只需要写hello，自动补全
+# set(BUILD_SHARED_LIBS ON) #设置开关，默认编译生成改为动态库
+add_library(hello SHARED ${LIBHELLO_SRC})
+#设置库文件输出目录,默认是编译发生的目录
+#set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
+#设置动态库版本号，VERSION指动态库版本，SOVERSION指的是API版本
+#set_target_properties(hello PROPERTIES VERSION 1.2 SOVERSION 1)
+#install默认路径是/usr/local
+#静态库使用ARCHIVE关键字
+#install(TARGET hello LIBRARY DESTINATION lib ARCHIVE DESTINATION lib)
+install(TARGETS hello LIBRARY DESTINATION lib)
+
+#定义源文件
+set(SRC_LIST useHello.cpp)
+#生成可执行文件
+add_executable(sayHello ${SRC_LIST})
+#为target添加共享库
+target_link_libraries(sayHello hello)
+#也可以写成target_link_libraries(sayHello libhello.so)
+#设置可执行文件输出目录,默认是编译发生的目录
+#set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
+#install默认路径是/usr/local
+#install(FILES hello.h DESTINATION include)
+

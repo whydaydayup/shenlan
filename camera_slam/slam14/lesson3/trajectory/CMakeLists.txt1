@@ -1,0 +1,24 @@
+cmake_minimum_required(VERSION 2.8)
+project(draw_trajectory)
+# build_type
+set(CMAKE_BUILD_TYPE "Release")
+# c++11 support
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+add_definitions(-DCOMPILEDWITHC11)
+
+#include_directories("/usr/include/eigen3")
+LIST(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake_modules)
+find_package(Eigen3 REQUIRED)
+find_package(Pangolin REQUIRED)
+find_package(Sophus REQUIRED)
+include_directories(
+        ${EIGEN3_INCLUDE_DIRS}
+        ${Pangolin_INCLUDE_DIRS}
+        ${Sophus_INCLUDE_DIRS})
+
+add_executable(${PROJECT_NAME} draw_trajectory.cpp)
+target_link_libraries(${PROJECT_NAME}
+        ${EIGEN3_LIBS}
+        ${Pangolin_LIBRARIES}
+        ${Sophus_LIBRARIES})
+

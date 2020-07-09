@@ -1,0 +1,76 @@
+基本过程：
+1、获取图像
+2、对图像进行处理
+3、通过FAST算法对图像进行特征检测，通过KLT光流法跟踪图像的特征，如果跟踪的特征有所丢失，特征数小于某个阈值，那么重新特征检测。
+ // 使用的是2d-2d对极约束的方法来估计相机运动
+4、通过RANSAC的5点算法来估计出两幅图像的本质矩阵。
+5、通过本质矩阵进行估计R和t
+6、对尺度信息进行估计，最终确定旋转矩阵和平移向量
+
+
+
+区分 iostream与fstream与stringstream
+iostream：是IO流的头文件，表明从流读入读出数据。这样才能用cin cout endl等等，
+fstream：负责与文件输入输出打交道。包含着ifstream  ofstream  fstream三类。
+
+ifstream表示从一个给定文件读取数据。ofstream表示向一个给定文件写入数据。
+1、成员函数open()
+首先根据三个类定义相应的对象，然后将对象与某个文件关联起来。
+    ifstream fin();
+    fin.open("text.txt");
+ void open ( const char * filename, ios_base::openmode mode = ios_base::in | ios_base::out );
+它中间的参数是一个常量字符指针，也可以通过文件名的string常量
+    const string s="text.txt";
+    fin.open(s)
+ 如果不是const string
+    string s="text.txt";
+    fin.open(s.str().c_str())//c_str()作用就是变成一个const string
+2、 在定义流对象的时候以文件名初始化
+ifstream fin("test.txt");
+
+
+#include <iostream>
+#include <fstream>
+#include <string>
+using namespace std;
+ 
+int main(){
+	ifstream in("test.txt"); // 建立in与文件test.txt之间的额关联
+    
+	if(!in)//判断是否加载进
+	{
+		cout << "error" << endl;
+		return 1;
+	}
+ 
+	string line;
+	while(getline(in, line))//按行读取txt中的内容，每次从fin指向的文件中读取一行，一行之中的所有字符都会被读入，包括空格。但是结尾的空格不读入，回车换行也不读入。
+	{
+		cout << line << endl;	
+	}
+ 
+	return 0;
+     
+}
+
+
+
+
+
+stringstream的对象与内存中的string对象建立关联， 往string对象写东西， 或者从string对象读取东西。
+
+适用情况：处理行内单个单词
+
+// 导入图像
+std::stringstream ss;
+ss <<  "C:/dataset/00/image_1/"
+	<< std::setw(6) << std::setfill('0') << img_id << ".png";
+
+cv::Mat img(cv::imread(ss.str().c_str(), 0));
+
+str()成员函数的使用可以让istringstream对象返回一个string字符串
+c_str()作用就是变成一个const string
+
+
+
+
